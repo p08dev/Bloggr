@@ -71,7 +71,7 @@ if (isset($_POST['check'])) {
     if(count($error) <= 0) {
       $auth = new \Bloggr\Auth($pdo);
 
-      $register = $auth->register($user, $email, $pass, 1);
+      $register = $auth->register($user, $email, $pass, \Bloggr\Roles::ADMIN);
       if (is_array($register)) {
         foreach($register as $regErr) {
           array_push($error, $regErr);
