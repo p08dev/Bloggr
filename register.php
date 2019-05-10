@@ -1,9 +1,6 @@
 <?php
 include_once(__DIR__."/lib/autoload.php");
-// print_r($auth->register('Furentes', 'furentes@furentes.de', '123456789'));
-// print_r($auth->login('Furentes', '123456789'));
-// echo $auth->isLoggedIn();
-// echo $auth->logout();
+
 if ($auth->isLoggedIn()) {
   header('Location: /');
 }
@@ -51,9 +48,9 @@ if (isset($_POST['register'])) {
 
     <form action="/register.php" method="post" class="clearfix">
       <label for="username">Username</label>
-      <input type="text" name="username" id="username" value="<?= (isset($_POST['username'])) ? $_POST['username'] : ''; ?>"><br>
+      <input type="text" name="username" id="username" value="<?= (isset($_POST['username'])) ? htmlspecialchars($_POST['username']) : ''; ?>"><br>
       <label for="email">E-Mail</label>
-      <input type="text" name="email" id="email" value="<?= (isset($_POST['email'])) ? $_POST['email'] : ''; ?>"><br>
+      <input type="text" name="email" id="email" value="<?= (isset($_POST['email'])) ? htmlspecialchars($_POST['email']) : ''; ?>"><br>
       <label for="password">Password</label>
       <input type="password" name="password" id="password""><br>
       <label for="password2">Password wiederholen</label>

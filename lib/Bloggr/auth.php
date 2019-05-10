@@ -129,11 +129,218 @@ class Auth
   public function isLoggedIn() {
     return isset($_SESSION['id']);
   }
+  public function getId() {
+    if (!$this->isLoggedIn()) return false;
+    return $_SESSION['id'];
+  }
   public function logout() {
     $_SESSION['id'] = '';
     unset($_SESSION['id']);
     session_unset();
     return true;
+  }
+  public function getUsernameById($id) {
+    if (empty($id) || !\is_numeric($id)) {
+      return false;
+    }
+
+    try {
+      $s = $this->pdo->prepare("SELECT username FROM users WHERE id = :id LIMIT 1;");
+      $s->execute(array(
+        ':id' => $id,
+      ));
+
+      if ($s->rowCount() <= 0) {
+        return false;
+      }
+
+      while ($row = $s->fetch()) {
+        return $row['username'];
+      }
+
+      return false;
+    } catch (\PDOException $e) {
+      return false;
+    }
+  }
+  public function hasRole($role) {
+    if (empty($role) || !\is_numeric($role) && !\is_array($role)) {
+      return false;
+    }
+
+    if (empty($_SESSION['id'])) return false;
+
+    try {
+      $s = $this->pdo->prepare("SELECT roles_mask FROM users WHERE id = :id LIMIT 1;");
+      $s->execute(array(
+        ':id' => $_SESSION['id']
+      ));
+
+      if ($s->rowCount() <= 0) {
+        return false;
+      }
+
+      while ($row = $s->fetch()) {
+        $mask = $row['roles_mask'];
+      }
+
+      if (\is_array($role)) {
+        foreach ($role as $key => $value) {
+          if (($mask & $value) === $value) {
+            return true;
+          }
+        }
+      }
+
+      return ($mask & $role) === $role;
+    } catch (\PDOException $e) {
+      return false;
+    }
+  }
+  public function newPost($title, $text) {
+    if (!$this->isLoggedIn()) return false;
+
+    $errors = array();
+    $title = htmlspecialchars(trim(filter_var($title, FILTER_SANITIZE_STRING)));
+    $text = htmlspecialchars(trim($text, FILTER_SANITIZE_STRING));
+    $created_at = time();
+    $id = [ 'Something went wrong!' ];
+
+    if (strlen($title) < 3) {
+      array_push($errors, 'Title is too short! Min. 3');
+    }
+    if (strlen($title) > 64) {
+      array_push($errors, 'Title is too long! Max. 64');
+    }
+    if (strlen($text) < 8) {
+      array_push($errors, 'Text is too short! Min. 8');
+    }
+    if (strlen($text) > 12000000) {
+      array_push($errors, 'Text is too long! MAx. 10M');
+    }
+    if (count($errors) > 0) {
+      return $errors;
+    }
+    try {
+      $s = $this->pdo->prepare("INSERT INTO posts (user, title, text, created_at) VALUES(:user, :title, :text, :created_at);");
+      $r = $s->execute(array(
+        ':user' => $this->getId(),
+        ':title' => $title,
+        ':text' => $text,
+        ':created_at' => $created_at,
+      ));
+      $id = $this->pdo->lastInsertId();
+      if(!$r) {
+        array_push($errors, 'Something went wrong!');
+      }
+    } catch (\PDOException $e) {
+      array_push($errors, 'Something went wrong!');
+    }
+    if (count($errors) > 0) {
+      return $errors;
+    }
+    return $id;
+  }
+  public function editPost($id, $title, $text) {
+    if (!$this->isLoggedIn()) return false;
+
+    $errors = array();
+    $title = htmlspecialchars(trim(filter_var($title, FILTER_SANITIZE_STRING)));
+    $text = htmlspecialchars(trim($text, FILTER_SANITIZE_STRING));
+    $updated_at = time();
+
+    try {
+      $s = $this->pdo->prepare("SELECT posts.* FROM posts INNER JOIN users ON posts.user = users.id WHERE posts.user = :user AND posts.id = :post LIMIT 1;");
+      $s->execute(array(
+        ':user' => $this->getId(),
+        ':post' => $id,
+      ));
+
+      if ($s->rowCount() <= 0) {
+        return false;
+      }
+    } catch (\PDOException $e) {
+      array_push($errors, 'Something went wrong!');
+    }
+    
+    if (strlen($title) < 3) {
+      array_push($errors, 'Title is too short! Min. 3');
+    }
+    if (strlen($title) > 64) {
+      array_push($errors, 'Title is too long! Max. 64');
+    }
+    if (strlen($text) < 8) {
+      array_push($errors, 'Text is too short! Min. 8');
+    }
+    if (strlen($text) > 12000000) {
+      array_push($errors, 'Text is too long! MAx. 10M');
+    }
+    if (count($errors) > 0) {
+      return $errors;
+    }
+    try {
+      $s = $this->pdo->prepare("UPDATE posts SET title = :title, text = :text, updated_at = :updated_at WHERE id = :id LIMIT 1;");
+      $r = $s->execute(array(
+        ':title' => $title,
+        ':text' => $text,
+        ':updated_at' => $updated_at,
+        ':id' => $id,
+      ));
+      if(!$r) {
+        array_push($errors, 'Something went wrong!');
+      }
+    } catch (\PDOException $e) {
+      array_push($errors, 'Something went wrong!');
+    }
+    if (count($errors) > 0) {
+      return $errors;
+    }
+    return true;
+  }
+  public function getPost($id) {
+    if (empty($id) || !\is_numeric($id)) {
+      return false;
+    }
+
+    try {
+      $s = $this->pdo->prepare("SELECT * FROM posts WHERE id = :id LIMIT 1;");
+      $s->execute(array(
+        ':id' => $id,
+      ));
+
+      if ($s->rowCount() <= 0) {
+        return false;
+      }
+
+      while ($row = $s->fetch()) {
+        $row['user'] = $this->getUsernameById($row['user']);
+        return $row;
+      }
+
+      return false;
+    } catch (\PDOException $e) {
+      return false;
+    }
+  }
+  public function getAllPosts() {
+    try {
+      $posts = [];
+      $sql = "SELECT * FROM posts ORDER BY id ASC";
+      $result = $this->pdo->query($sql);
+
+      if (!$result) {
+        return false;
+      }
+
+      foreach ($result as $row) {
+        $row['user'] = $this->getUsernameById($row['user']);
+        array_push($posts, $row);
+      }
+
+      return $posts;
+    } catch (\PDOException $e) {
+      return $posts;
+    }
   }
 }
 ?>

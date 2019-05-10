@@ -17,13 +17,13 @@ $pass = "";
 
 if (isset($_POST['check']) || isset($_POST['submit'])) {
   $siteTitle = trim($_POST['SITE_TITLE']);
-  $dbHost = $_POST['DB_HOST'];
-  $dbName = $_POST['DB_NAME'];
-  $dbUser = $_POST['DB_USER'];
+  $dbHost = htmlspecialchars($_POST['DB_HOST']);
+  $dbName = htmlspecialchars($_POST['DB_NAME']);
+  $dbUser = htmlspecialchars($_POST['DB_USER']);
   $dbPass = $_POST['DB_PASS'];
 
-  $user = $_POST['ADMIN_USER'];
-  $email = $_POST['ADMIN_EMAIL'];
+  $user = htmlspecialchars($_POST['ADMIN_USER']);
+  $email =htmlspecialchars($_POST['ADMIN_EMAIL']);
   $pass = $_POST['ADMIN_PASS'];
 
   if($siteTitle == "" || strlen($siteTitle) < 1) {

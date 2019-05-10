@@ -1,6 +1,7 @@
 <?php
 require_once(__DIR__."/lib/autoload.php");
 
+$posts = $auth->getAllPosts();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -12,6 +13,13 @@ require_once(__DIR__."/lib/autoload.php");
 </head>
 <body>
   <?php
+  if ($auth->hasRole([ \Bloggr\Roles::ADMIN, \Bloggr\Roles::AUTHOR ])) {
+  ?>
+  <p>
+    <a href="/post.php?new">Neuer Beitrag</a>
+  </p>
+  <?php
+  }
   if (!$auth->isLoggedIn()) {
   ?>
   <p>
@@ -21,8 +29,7 @@ require_once(__DIR__."/lib/autoload.php");
     <a href="/register.php">Registrieren</a>
   </p>
   <?php
-  }
-  if ($auth->isLoggedIn()) {
+  } else {
   ?>
   <p>
     <a href="/logout.php">Logout</a>
@@ -30,5 +37,25 @@ require_once(__DIR__."/lib/autoload.php");
   <?php
   }
   ?>
+  <div>
+    <?php
+    if ($posts) {
+    foreach($posts as $post) {
+    ?>
+    <p>
+      <h2>Titel: <a href="/post.php?view=<?= $post['id'] ?>"><?= $post['title'] ?></a></h2>
+      <p>
+        Text:
+        <?= substr($post['text'], 0, 512) ?><?= (substr($post['text'], 0, 512) !== $post['text']) ? '... <br><a href="/post.php?view='.$post["id"].'">Weiterlesen...</a>' : '' ?>
+      </p>
+      <p>Author: <?= $post['user'] ?></p>
+    </p>
+    <?php
+    }
+    } else {
+      echo 'Noch kein Beitrag vorhanden. :(';
+    }
+    ?>
+  </div>
 </body>
 </html>

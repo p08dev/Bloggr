@@ -24,6 +24,6 @@ if(!($request_uri == "/setup")) {
   $auth = new \Bloggr\Auth($pdo);
 }
 
-echo '<pre>';
-print_r($_SESSION);
-echo '</pre>';
+if ($auth->isLoggedIn()) {
+  echo 'Eingeloggt als <b>'.$auth->getUsernameById($auth->getId()).'</b>';
+}
