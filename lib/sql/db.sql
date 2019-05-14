@@ -17,10 +17,11 @@ CREATE TABLE IF NOT EXISTS `users` (
 --
 
 CREATE TABLE `posts` (
-  `id` int(11) UNSIGNED NOT NULL,
+  `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
   `user` int(11) UNSIGNED NOT NULL,
   `title` varchar(128) CHARACTER SET utf8mb4 NOT NULL,
   `text` longtext CHARACTER SET utf8mb4 NOT NULL,
   `created_at` int(10) UNSIGNED NOT NULL,
-  `updated_at` int(10) UNSIGNED DEFAULT NULL
+  `updated_at` int(10) UNSIGNED DEFAULT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;

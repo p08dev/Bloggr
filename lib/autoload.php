@@ -22,8 +22,8 @@ if(@include(__DIR__."/config.php")) {
 if(!($request_uri == "/setup")) {
   $pdo = new \PDO('mysql:dbname='.DB_NAME.';host='.DB_HOST.';charset=utf8mb4', DB_USER, DB_PASS);
   $auth = new \Bloggr\Auth($pdo);
-}
 
-if ($auth->isLoggedIn()) {
-  echo 'Eingeloggt als <b>'.$auth->getUsernameById($auth->getId()).'</b>';
+  if ($auth->isLoggedIn()) {
+    echo 'Eingeloggt als <b>'.$auth->getUsernameById($auth->getId()).'</b>';
+  }
 }
