@@ -23,5 +23,16 @@ CREATE TABLE `posts` (
   `text` longtext CHARACTER SET utf8mb4 NOT NULL,
   `created_at` int(10) UNSIGNED NOT NULL,
   `updated_at` int(10) UNSIGNED DEFAULT NULL,
+  `updated_by` int(11) UNSIGNED,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+CREATE TABLE `comments` (
+  `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `post` int(11) UNSIGNED NOT NULL,
+  `user` int(11) UNSIGNED NOT NULL,
+  `comment` text NOT NULL,
+  `created_at` int(10) UNSIGNED NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;

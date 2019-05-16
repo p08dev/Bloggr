@@ -14,7 +14,11 @@ $data = [];
 $success = false;
 
 if (isset($_GET['view'])) {
+  if (isset($_POST['comment'])) {
+    $result = $auth->commentPost($_GET['view'], $_POST['comment']);
+  }
   $result = $auth->getPost($_GET['view']);
+  $result_comments = $auth->getPostComments($_GET['view']);
   if(!$result) {
     array_push($errors, '404 Not Found');
   } else {
@@ -27,7 +31,8 @@ else if (isset($_GET['new'])) {
 }
 else if (isset($_GET['edit'])) {
   $action = 'edit';
-} else {
+}
+else {
   array_push($errors, '404 Not Found');
 }
 
@@ -62,15 +67,6 @@ if ($action == 'edit') {
     $data = $result;
   }
 }
-
-if (isset($_POST['login'])) {
-  $login = $auth->login($_POST['user'], $_POST['password']);
-  if (is_array($login)) {
-    $errors = $login;
-  } else {
-    header('Location: /');
-  }
-}
 ?>
 <!DOCTYPE html>
 <html>
@@ -96,13 +92,41 @@ if (isset($_POST['login'])) {
     if($success == true) {
       echo '<span style="color: green;">Post bearbeitet!</span><br>';
     }
-
     if ($action == 'view'):
+    if ($auth->canEditPost($data["id"]) == true) echo '<a href="post.php?edit='.$data["id"].'">Edit Post</a>';
     ?>
     <h2>Titel: <?= $data['title'] ?></h2>
     <p>Text: <?= nl2br($data['text']) ?></p>
     <p>Author: <?= $data['user'] ?></p>
     <?php
+    if($data['updated_by']):
+    ?>
+    <p>Last edit at <?= date('H:i d.m.Y',$data['updated_at']).' from '.$data['updated_by'] ?></p>
+    <?php
+    endif;
+
+    if ($auth->isLoggedIn()) {
+    ?>
+    <p>
+      <form action="<?= htmlspecialchars($_SERVER['REQUEST_URI']) ?>" method="post">
+        <textarea name="comment" id="comment" cols="30" rows="2"></textarea>
+        <input type="submit" value="Comment">
+      </form>
+    </p>
+    <?php
+    }
+
+    if(is_array($result_comments)) {
+    foreach($result_comments as $comment) {
+    ?>
+    <p>
+      <b><?= $comment['user']; ?></b> - <?= date('H:i d.m.Y',$comment['created_at']) ?><br>
+      <?= $comment['comment']; ?>
+    </p>
+    <?php
+    }
+    }
+
     endif;
 
     if ($action == 'new'):

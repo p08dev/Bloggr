@@ -13,6 +13,13 @@ $posts = $auth->getAllPosts();
 </head>
 <body>
   <?php
+  if ($auth->hasRole([ \Bloggr\Roles::ADMIN ])) {
+  ?>
+  <p>
+    <a href="/users.php">Users</a>
+  </p>
+  <?php
+  }
   if ($auth->hasRole([ \Bloggr\Roles::ADMIN, \Bloggr\Roles::AUTHOR ])) {
   ?>
   <p>
@@ -31,6 +38,9 @@ $posts = $auth->getAllPosts();
   <?php
   } else {
   ?>
+  <p>
+    <a href="/settings.php">Einstellungen</a>
+  </p>
   <p>
     <a href="/logout.php">Logout</a>
   </p>

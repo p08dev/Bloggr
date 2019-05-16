@@ -30,7 +30,7 @@ if (isset($_POST['register'])) {
 </head>
 <body>
   <div>
-    <h2>Login</h2>
+    <h2>Register</h2>
 
     <?php
     foreach ($errors as $key=>$value):

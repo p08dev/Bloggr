@@ -241,8 +241,30 @@ class Auth
     }
     return $id;
   }
+  public function canEditPost($id) {
+    if (!$this->isLoggedIn()) return false;
+    if (!$this->hasRole(\Bloggr\Roles::ADMIN)) {
+      try {
+        $s = $this->pdo->prepare("SELECT id FROM posts WHERE id = :id AND user = :user LIMIT 1;");
+        $s->execute(array(
+          ':id' => $id,
+          ':user' => $this->getId(),
+        ));
+  
+        if ($s->rowCount() <= 0) {
+          return false;
+        }
+
+        return true;
+      } catch (\PDOException $e) {
+        return false;
+      }
+    }
+    return true;
+  }
   public function editPost($id, $title, $text) {
     if (!$this->isLoggedIn()) return false;
+    if (!$this->canEditPost($id)) return false;
 
     $errors = array();
     $title = htmlspecialchars(trim(filter_var($title, FILTER_SANITIZE_STRING)));
@@ -279,11 +301,12 @@ class Auth
       return $errors;
     }
     try {
-      $s = $this->pdo->prepare("UPDATE posts SET title = :title, text = :text, updated_at = :updated_at WHERE id = :id LIMIT 1;");
+      $s = $this->pdo->prepare("UPDATE posts SET title = :title, text = :text, updated_at = :updated_at, updated_by = :updated_by WHERE id = :id LIMIT 1;");
       $r = $s->execute(array(
         ':title' => $title,
         ':text' => $text,
         ':updated_at' => $updated_at,
+        ':updated_by' => $this->getId(),
         ':id' => $id,
       ));
       if(!$r) {
@@ -314,6 +337,9 @@ class Auth
 
       while ($row = $s->fetch()) {
         $row['user'] = $this->getUsernameById($row['user']);
+        if ($row['updated_by'] && $row['updated_by'] != 0) {
+          $row['updated_by'] = $this->getUsernameById($row['updated_by']);
+        }
         return $row;
       }
 
@@ -341,6 +367,182 @@ class Auth
     } catch (\PDOException $e) {
       return $posts;
     }
+  }
+  public function commentPost($id, $comment) {
+    if (empty($id) || !\is_numeric($id)) {
+      return false;
+    }
+    if (!$this->isLoggedIn()) return false;
+
+    $errors = array();
+    $comment = htmlspecialchars(trim($comment, FILTER_SANITIZE_STRING));
+    $created_at = time();
+    if (strlen($comment) < 3) {
+      array_push($errors, 'Text is too short! Min. 3');
+    }
+    if (strlen($comment) > 256) {
+      array_push($errors, 'Text is too long! Max. 256');
+    }
+    if (count($errors) > 0) {
+      return $errors;
+    }
+    try {
+      $s = $this->pdo->prepare("INSERT INTO comments (post, user, comment, created_at) VALUES(:post, :user, :comment, :created_at);");
+      $r = $s->execute(array(
+        ':post' => $id,
+        ':user' => $this->getId(),
+        ':comment' => $comment,
+        ':created_at' => $created_at,
+      ));
+      if(!$r) {
+        array_push($errors, 'Something went wrong!');
+      }
+      if (count($errors) > 0) {
+        return $errors;
+      }
+      return true;
+    } catch (\PDOException $e) {
+      array_push($errors, 'Something went wrong!');
+    }
+    if (count($errors) > 0) {
+      return $errors;
+    }
+    return false;
+  }
+  public function getPostComments($id) {
+    if (empty($id) || !\is_numeric($id)) {
+      return false;
+    }
+
+    try {
+      $s = $this->pdo->prepare("SELECT * FROM comments WHERE post = :id ORDER BY id DESC;");
+      $s->execute(array(
+        ':id' => $id,
+      ));
+
+      if ($s->rowCount() <= 0) {
+        return false;
+      }
+      $rows = [];
+
+      while ($row = $s->fetch()) {
+        $row['user'] = $this->getUsernameById($row['user']);
+        array_push($rows, $row);
+      }
+      return $rows;
+
+      return false;
+    } catch (\PDOException $e) {
+      return false;
+    }
+  }
+  public function getAllUsers() {
+    try {
+      $users = [];
+      $sql = "SELECT * FROM users ORDER BY id ASC";
+      $result = $this->pdo->query($sql);
+
+      if (!$result) {
+        return false;
+      }
+
+      foreach ($result as $row) {
+        array_push($users, $row);
+      }
+
+      return $users;
+    } catch (\PDOException $e) {
+      return $users;
+    }
+  }
+  public function updateUserRole($id, $role = 0) {
+    if (!$this->isLoggedIn()) return false;
+    if (!$this->hasRole([ \Bloggr\Roles::ADMIN ])) {
+      return false;
+    }
+    if (empty($id) || !\is_numeric($id)) {
+      return false;
+    }
+    if (!isset($role) || !\is_numeric($role)) {
+      return false;
+    }
+
+    $errors = array();
+
+    try {
+      $s = $this->pdo->prepare("UPDATE users SET roles_mask = :role WHERE id = :id LIMIT 1;");
+      $r = $s->execute(array(
+        ':role' => $role,
+        ':id' => $id,
+      ));
+      if(!$r) {
+        array_push($errors, 'Something went wrong!');
+      }
+    } catch (\PDOException $e) {
+      array_push($errors, 'Something went wrong!');
+    }
+    if (count($errors) > 0) {
+      return $errors;
+    }
+    return true;
+  }
+  public function updatePassword($old, $new, $repeat) {
+    if (!$this->isLoggedIn()) return false;
+    $errors = array();
+    
+    $old = filter_var($old, FILTER_SANITIZE_STRING);
+    $new = filter_var($new, FILTER_SANITIZE_STRING);
+    $repeat = filter_var($repeat, FILTER_SANITIZE_STRING);
+
+    try {
+      $s = $this->pdo->prepare("SELECT id, username, email, password FROM users WHERE id = :id LIMIT 1;");
+      $s->execute(array(
+        ':id' => $this->getId()
+      ));
+      if ($s->rowCount() <= 0) {
+        array_push($errors, 'User not found!');
+      } else {
+        while ($row = $s->fetch()) {
+          if (!password_verify($old, $row['password'])) {
+            array_push($errors, 'Wrong password!');
+          }
+        }
+      }
+    } catch (\PDOException $e) {
+      array_push($errors, 'Something went wrong!');
+    }
+    if (count($errors) > 0) {
+      return $errors;
+    }
+    if ($new != $repeat) {
+      array_push($errors, 'Password repeat wrong!');
+    }
+    if (strlen(trim($new)) < 8) {
+      array_push($errors, 'Password is too short! Min 8');
+    }
+    if (count($errors) > 0) {
+      return $errors;
+    }
+    if (count($errors) > 0) {
+      return $errors;
+    }
+
+    try {
+      $s = $this->pdo->prepare("UPDATE users SET password = :password WHERE id = :id LIMIT 1;");
+      $r = $s->execute(array(
+        ':password' => password_hash($new, PASSWORD_DEFAULT),
+        ':id' => $this->getId(),
+      ));
+      if(!$r) {
+        array_push($errors, 'Something went wrong!');
+      }
+    } catch (\PDOException $e) {
+      array_push($errors, 'Something went wrong!');
+    }
+    if (count($errors) > 0) {
+      return $errors;
+    }
+    return true;
   }
 }
 ?>

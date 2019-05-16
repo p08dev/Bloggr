@@ -1,5 +1,5 @@
 <?php
-define('SITE_TITLE', 'A Bloggr Site');
+define('SITE_TITLE', 'Title of Doom');
 
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'bloggr');
