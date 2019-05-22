@@ -27,13 +27,13 @@ if (isset($_POST['check']) || isset($_POST['submit'])) {
   $pass = $_POST['ADMIN_PASS'];
 
   if($siteTitle == "" || strlen($siteTitle) < 1) {
-    array_push($error, "Please enter a site title");
+    array_push($error, "Bitte gib einen Seitentitel ein.");
   }
   if($dbHost == "") {
-    array_push($error, "Please enter a hostname");
+    array_push($error, "Bitte gib einen Hostnamen ein.");
   }
   if($dbName == "") {
-    array_push($error, "Please enter a database");
+    array_push($error, "Bitte gib eine Datenbank an.");
   }
 
   if (isset($_POST['submit'])) {
@@ -62,7 +62,7 @@ if (isset($_POST['check'])) {
       $sql = file_get_contents(__DIR__."/lib/sql/db.sql");
       try {
         $pdo->exec($sql);
-        array_push($successArray, 'Database setup complete...');
+        array_push($successArray, 'Tabellen erstellt...!');
       } catch (PDOException $ex) {
         array_push($error, $ex->getMessage());
       }
@@ -77,7 +77,7 @@ if (isset($_POST['check'])) {
           array_push($error, $regErr);
         }
       } else {
-        array_push($successArray, 'Admin setup complete...');
+        array_push($successArray, 'Administrator Account erstellt...!');
         $success = true;
         $viewSubmit = true;
       }
@@ -99,6 +99,15 @@ if (isset($_POST['check'])) {
   <link rel="stylesheet" href="/css/main.css">
 </head>
 <body>
+  <nav class="demo">
+    <a href="/setup.php" class="brand">
+      <span>Willkommen zu Bloggr!</span>
+    </a>
+  </nav>
+  <section class="main">
+  <h2>Seiteninformationen</h2>
+  <article class="card">
+  <header>
   <p>
     <?php
       foreach($error as $err) {
@@ -111,41 +120,40 @@ if (isset($_POST['check'])) {
   </p>
   <form action="" method="post">
     <div <?= ($success) ? 'style="display: none;' : '' ?>>
-      <h2>Site info</h2>
       <p>
-        <label for="SITE_TITLE">Title</label>
-        <input type="text" name="SITE_TITLE" id="SITE_TITLE" placeholder="A Bloggr Site" value="<?= $siteTitle ?>" >
+        <label for="SITE_TITLE">Seitentitel</label>
+        <input type="text" name="SITE_TITLE" id="SITE_TITLE" placeholder="z.B. Mein Blog" value="<?= $siteTitle ?>" >
       </p>
-      <h2>Database info</h2>
+      <h2>Datenbankinformationen</h2>
       <p>
         <label for="DB_HOST">Host</label>
-        <input type="text" name="DB_HOST" id="DB_HOST" placeholder="localhost" value="<?= $dbHost ?>" >
+        <input type="text" name="DB_HOST" id="DB_HOST" placeholder="z.B. localhost" value="<?= $dbHost ?>" >
       </p>
       <p>
-        <label for="DB_NAME">Database</label>
-        <input type="text" name="DB_NAME" id="DB_NAME" placeholder="bloggr" value="<?= $dbName ?>" >
+        <label for="DB_NAME">Datenbank</label>
+        <input type="text" name="DB_NAME" id="DB_NAME" placeholder="z.B. bloggr" value="<?= $dbName ?>" >
       </p>
       <p>
-        <label for="DB_USER">Username</label>
-        <input type="text" name="DB_USER" id="DB_USER" placeholder="bloggr" value="<?= $dbUser ?>" >
+        <label for="DB_USER">Benutzername</label>
+        <input type="text" name="DB_USER" id="DB_USER" placeholder="z.B. root" value="<?= $dbUser ?>" >
       </p>
       <p>
-        <label for="DB_PASS">Password</label>
-        <input type="password" name="DB_PASS" id="DB_PASS" placeholder="s3cur3" value="<?= $dbPass ?>" >
+        <label for="DB_PASS">Passwort (min. 8)</label>
+        <input type="password" name="DB_PASS" id="DB_PASS" placeholder="" value="<?= $dbPass ?>" >
       </p>
       <br>
-      <h2>Create administrator</h2>
+      <h2>Administrator Konto</h2>
       <p>
-        <label for="ADMIN_USER">Username</label>
-        <input type="text" name="ADMIN_USER" id="ADMIN_USER" placeholder="admin" value="<?= $user ?>" >
+        <label for="ADMIN_USER">Benutzername</label>
+        <input type="text" name="ADMIN_USER" id="ADMIN_USER" placeholder="z.B. admin" value="<?= $user ?>" >
       </p>
       <p>
         <label for="ADMIN_EMAIL">E-Mail</label>
-        <input type="text" name="ADMIN_EMAIL" id="ADMIN_EMAIL" placeholder="bloggr" value="<?= $email ?>" >
+        <input type="text" name="ADMIN_EMAIL" id="ADMIN_EMAIL" placeholder="z.B. blog@example.com" value="<?= $email ?>" >
       </p>
       <p>
-        <label for="ADMIN_PASS">Password</label>
-        <input type="password" name="ADMIN_PASS" id="ADMIN_PASS" placeholder="s3cur3" value="<?= $pass ?>" >
+        <label for="ADMIN_PASS">Passwort </label>
+        <input type="password" name="ADMIN_PASS" id="ADMIN_PASS" placeholder="" value="<?= $pass ?>" >
       </p>
     </div>
     <p>
@@ -154,5 +162,8 @@ if (isset($_POST['check'])) {
       <?= ($viewSubmit) ? '<input type="submit" value="Submit" name="submit">' : '' ?>
     </p>
   </form>
+  </header>
+  </article>
+  </section>
 </body>
 </html>

@@ -9,6 +9,7 @@
   <label for="bmenub" class="burger pseudo button">&#8801;</label>
 
   <div class="menu">
+    <a href="/" class="pseudo button"">Startseite</a>
     <?php
     if ($auth->hasRole([ \Bloggr\Roles::ADMIN ])){
     ?>
@@ -17,8 +18,7 @@
     <?php
     } elseif($auth->hasRole([ \Bloggr\Roles::AUTHOR ])) {
     ?>
-    <a href="/settings.php" class="pseudo button">Einstellungen</a>
-    <a href="/logout.php" class="button">Logout</a>
+    <a href="/post.php?new" class="pseudo button">Neuer Post</a>
     <?php
     }
     ?>

@@ -12,25 +12,32 @@ $errors = [];
 $action = '';
 $data = [];
 $success = false;
+$title = "404 Not Found";
 
 if (isset($_GET['view'])) {
   if (isset($_POST['comment'])) {
     $result = $auth->commentPost($_GET['view'], $_POST['comment']);
+    if (is_array($result)) {
+      $errors = $result;
+    }
   }
   $result = $auth->getPost($_GET['view']);
   $result_comments = $auth->getPostComments($_GET['view']);
   if(!$result) {
     array_push($errors, '404 Not Found');
   } else {
+    $title = $result['title'];
     $action = 'view';
     $data = $result;
   }
 }
 else if (isset($_GET['new'])) {
   $action = 'new';
+  $title = "Neuer Beitrag";
 }
 else if (isset($_GET['edit'])) {
   $action = 'edit';
+  $title = "Beitrag bearbeitem";
 }
 else {
   array_push($errors, '404 Not Found');
@@ -46,7 +53,7 @@ if ($action == 'new' && isset($_POST['new'])) {
   }
 }
 
-$title = "";
+$ptitle = "";
 $text = "";
 
 if ($action == 'edit' && isset($_POST['edit'])) {
@@ -71,13 +78,18 @@ if ($action == 'edit') {
 <!DOCTYPE html>
 <html>
 <?php
-$title = "Neuer Beitrag";
 require_once(__DIR__."/inc/head.php");
 ?>
 <body>
   <?php require_once(__DIR__."/inc/nav.php"); ?>
   <section class="main">
-    <a href="/">Zurück</a>
+    <?php
+    if ($action == 'edit' && (count($errors) <= 0)) {
+      echo '<a href="/post.php?view='.$data["id"].'">Zurück</a>';
+    } else {
+      echo '<a href="/">Zurück</a>';
+    }
+    ?>
     <?php
     foreach ($errors as $key=>$value):
     ?>
@@ -92,9 +104,12 @@ require_once(__DIR__."/inc/head.php");
     }
     if ($action == 'view'):
     ?>
-    <h2><?= $data['title'] ?></h2>
+    <div>
+    <header><h2><?= $data['title'] ?></h2></header>
+    <section>
     <p><?= nl2br($data['text']) ?></p>
-    <p><small>von <?= $data['user'] ?> am <?= date('H:i d.m.Y', $data['created_at']) ?><br>
+    </section>
+    <footer><small>von <?= $data['user'] ?> am <?= date('H:i d.m.Y', $data['created_at']) ?><br>
     <?php
     if($data['updated_by']):
     ?>
@@ -102,9 +117,10 @@ require_once(__DIR__."/inc/head.php");
     </small>
     <?php
     endif;
-    echo '</p>';
     if ($auth->canEditPost($data["id"]) == true) echo '<a href="post.php?edit='.$data["id"].'">Edit Post</a>';
+    echo '</footer>';
     ?>
+    </div>
     <?php
     if ($auth->isLoggedIn()) {
     ?>
@@ -120,10 +136,14 @@ require_once(__DIR__."/inc/head.php");
     if(is_array($result_comments)) {
     foreach($result_comments as $comment) {
     ?>
-    <p>
-      <b><?= $comment['user']; ?></b> am <?= date('H:i d.m.Y',$comment['created_at']) ?><br>
+    <article class="card">
+      <section>
+      <b><?= $comment['user']; ?></b> <small>am <?= date('H:i d.m.Y',$comment['created_at']) ?></small>
+      </section>
+      <footer>
       <?= $comment['comment']; ?>
-    </p>
+      </footer>
+    </article>
     <?php
     }
     }
@@ -143,15 +163,15 @@ require_once(__DIR__."/inc/head.php");
     <?php
     endif;
 
-    if ($action == 'edit' && (count($errors) <= 0)):
+    if ($action == 'edit'):
     ?>
     <h2>Beitrag Bearbeiten</h2>
     <form action="<?= htmlspecialchars($_SERVER['REQUEST_URI']) ?>" method="post" class="clearfix">
       <label for="title">Titel</label>
-      <input type="text" name="title" id="title" value="<?= (isset($data['title'])) ? $data['title'] : $title; ?>"><br>
+      <input type="text" name="title" id="title" value="<?= (isset($data['title'])) ? $data['title'] : $ptitle; ?>"><br>
       <label for="text">Text</label>
       <textarea rows="4" cols="50" name="text" id="text"><?= (isset($data['text'])) ? $data['text'] : $text; ?></textarea>
-      <input type="submit" name="edit" value="edit">
+      <input type="submit" name="edit" value="Speichern">
     </form>
     <?php
     endif;

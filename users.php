@@ -34,8 +34,8 @@ require_once(__DIR__."/inc/head.php");
 <body>
   <?php require_once(__DIR__."/inc/nav.php"); ?>
   <section class="main">
-    <?= ($view) ? '<a href="/users.php">Zurück</a>' : '' ?>
-    <h2>Users</h2>
+    <h2>Benutzer</h2>
+    <?= ($view) ? '<a href="/users.php">Zurück</a><br><br>' : '' ?>
     <?php
     if($view) {
       $found = false;
@@ -45,9 +45,9 @@ require_once(__DIR__."/inc/head.php");
           
           ?>
     <form action="<?= htmlspecialchars($_SERVER['REQUEST_URI']) ?>" method="post">
-      <label for="username"><?= $value['username'] ?></label><br>
-      <label for="email"><?= $value['email'] ?></label><br>
-      <label for="roles_mask">Role</label>
+      <label for="username"><b>Benutzername:</b> <?= $value['username'] ?></label><br>
+      <label for="email"><b>E-Mail:</b> <?= $value['email'] ?></label><br>
+      <label for="roles_mask"><b>Rolle</b></label>
       <select name="role" id="role">
         <option value="0" <?= ($value['roles_mask'] == 0) ? 'selected' : '' ?>>Gast</option>
         <option value="1" <?= ($value['roles_mask'] == 1) ? 'selected' : '' ?>>Admin</option>

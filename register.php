@@ -8,7 +8,7 @@ $errors = [];
 $success = false;
 if (isset($_POST['register'])) {
   if ($_POST['password'] !== $_POST['password2']) {
-    array_push($errors, 'Passwörter sind nicht gleich');
+    array_push($errors, 'Passwörter sind nicht gleich!');
   } else {
     $register = $auth->register($_POST['username'], $_POST['email'], $_POST['password']);
     if (is_array($register)) {

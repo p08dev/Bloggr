@@ -16,19 +16,19 @@ class Auth
     $password = filter_var($password, FILTER_SANITIZE_STRING);
     $timestamp = time();
     if (preg_replace('/\s+/', '', $username) !== $username) {
-      array_push($errors, 'Your username may not contain whitespaces!');
+      array_push($errors, 'Dein Benutzername darf keine Leerzeichen enthalten!');
     }
     if (strlen(trim($username)) < 3) {
-      array_push($errors, 'Username is too short! Min. 3');
+      array_push($errors, 'Der Benutzername ist zu kurz! Min. 3');
     }
     if (strlen(trim($username)) > 16) {
-      array_push($errors, 'Username is too long! Max. 16');
+      array_push($errors, 'Der Benutzername ist zu lang! Max. 16');
     }
     if (!$email) {
-      array_push($errors, 'Enter a valid email!');
+      array_push($errors, 'Ungültige E-Mail!');
     }
     if (strlen(trim($password)) < 8) {
-      array_push($errors, 'Password is too short! Min 8');
+      array_push($errors, 'Passwort zu kurz! Min 8');
     }
     if (count($errors) > 0) {
       return $errors;
@@ -41,14 +41,14 @@ class Auth
       ));
       while ($row = $s->fetch()) {
         if ($row['username'] === $username) {
-          array_push($errors, 'Username already exists!');
+          array_push($errors, 'Benutzer existiert bereits!');
         }
         if ($row['email'] === $email) {
-          array_push($errors, 'Email already exists!');
+          array_push($errors, 'E-Mail existiert bereits!');
         }
       }
     } catch (\PDOException $e) {
-      array_push($errors, 'Something went wrong!');
+      array_push($errors, 'Da ist etwas schiefgelaufen!');
     }
     if (count($errors) > 0) {
       return $errors;
@@ -63,10 +63,10 @@ class Auth
         ':roles_mask' => $role
       ));
       if(!$r) {
-        array_push($errors, 'Something went wrong!');
+        array_push($errors, 'Da ist etwas schiefgelaufen!');
       }
     } catch (\PDOException $e) {
-      array_push($errors, 'Something went wrong!');
+      array_push($errors, 'Da ist etwas schiefgelaufen!');
     }
     if (count($errors) > 0) {
       return $errors;
@@ -78,10 +78,10 @@ class Auth
     $password = filter_var($password, FILTER_SANITIZE_STRING);
     $timestamp = time();
     if (!$user || $user === '' || preg_replace('/\s+/', '', $user) !== $user) {
-      array_push($errors, 'Please enter a username or email!');
+      array_push($errors, 'Kein Benutzername oder E-Mail angegeben!');
     }
     if (!$password || $password === '') {
-      array_push($errors, 'Please enter a password!');
+      array_push($errors, 'Kein Passwort angegeben!');
     }
     if (count($errors) > 0) {
       return $errors;
@@ -93,17 +93,17 @@ class Auth
         ':user' => $user
       ));
       if ($s->rowCount() <= 0) {
-        array_push($errors, 'Wrong username/email or password!');
+        array_push($errors, 'Falscher Benutzername/E-Mail oder Passwort!');
       } else {
         while ($row = $s->fetch()) {
           if (!password_verify($password, $row['password'])) {
-            array_push($errors, 'Wrong username/email or password!');
+            array_push($errors, 'Falscher Benutzername/E-Mail oder Passwort!');
           }
           $userId = $row['id'];
         }
       }
     } catch (\PDOException $e) {
-      array_push($errors, 'Something went wrong!');
+      array_push($errors, 'Da ist etwas schiefgelaufen!');
     }
     if (count($errors) > 0) {
       return $errors;
@@ -115,10 +115,10 @@ class Auth
         ':id' => $userId
       ));
       if(!$r) {
-        array_push($errors, 'Something went wrong!');
+        array_push($errors, 'Da ist etwas schiefgelaufen!');
       }
     } catch (\PDOException $e) {
-      array_push($errors, 'Something went wrong!');
+      array_push($errors, 'Da ist etwas schiefgelaufen!');
     }
     if (count($errors) > 0) {
       return $errors;
@@ -204,19 +204,19 @@ class Auth
     $title = htmlspecialchars(trim(filter_var($title, FILTER_SANITIZE_STRING)));
     $text = htmlspecialchars(trim($text, FILTER_SANITIZE_STRING));
     $created_at = time();
-    $id = [ 'Something went wrong!' ];
+    $id = [ 'Da ist etwas schiefgelaufen!' ];
 
     if (strlen($title) < 3) {
-      array_push($errors, 'Title is too short! Min. 3');
+      array_push($errors, 'Titel ist zu kurz! Min. 3');
     }
     if (strlen($title) > 64) {
-      array_push($errors, 'Title is too long! Max. 64');
+      array_push($errors, 'Titel ist zu lang! Max. 64');
     }
     if (strlen($text) < 8) {
-      array_push($errors, 'Text is too short! Min. 8');
+      array_push($errors, 'Text ist zu kurz! Min. 8');
     }
     if (strlen($text) > 12000000) {
-      array_push($errors, 'Text is too long! MAx. 10M');
+      array_push($errors, 'Text ist zu lang! Max. 10M');
     }
     if (count($errors) > 0) {
       return $errors;
@@ -231,10 +231,10 @@ class Auth
       ));
       $id = $this->pdo->lastInsertId();
       if(!$r) {
-        array_push($errors, 'Something went wrong!');
+        array_push($errors, 'Da ist etwas schiefgelaufen!');
       }
     } catch (\PDOException $e) {
-      array_push($errors, 'Something went wrong!');
+      array_push($errors, 'Da ist etwas schiefgelaufen!');
     }
     if (count($errors) > 0) {
       return $errors;
@@ -272,9 +272,8 @@ class Auth
     $updated_at = time();
 
     try {
-      $s = $this->pdo->prepare("SELECT posts.* FROM posts INNER JOIN users ON posts.user = users.id WHERE posts.user = :user AND posts.id = :post LIMIT 1;");
+      $s = $this->pdo->prepare("SELECT posts.* FROM posts INNER JOIN users ON posts.user = users.id WHERE posts.id = :post LIMIT 1;");
       $s->execute(array(
-        ':user' => $this->getId(),
         ':post' => $id,
       ));
 
@@ -282,20 +281,20 @@ class Auth
         return false;
       }
     } catch (\PDOException $e) {
-      array_push($errors, 'Something went wrong!');
+      array_push($errors, 'Da ist etwas schiefgelaufen!');
     }
     
     if (strlen($title) < 3) {
-      array_push($errors, 'Title is too short! Min. 3');
+      array_push($errors, 'Titel ist zu kurz! Min. 3');
     }
     if (strlen($title) > 64) {
-      array_push($errors, 'Title is too long! Max. 64');
+      array_push($errors, 'Titel ist zu lang! Max. 64');
     }
     if (strlen($text) < 8) {
-      array_push($errors, 'Text is too short! Min. 8');
+      array_push($errors, 'Text ist zu kurz! Min. 8');
     }
     if (strlen($text) > 12000000) {
-      array_push($errors, 'Text is too long! MAx. 10M');
+      array_push($errors, 'Text ist zu lang! Max. 10M');
     }
     if (count($errors) > 0) {
       return $errors;
@@ -310,10 +309,10 @@ class Auth
         ':id' => $id,
       ));
       if(!$r) {
-        array_push($errors, 'Something went wrong!');
+        array_push($errors, 'Da ist etwas schiefgelaufen!');
       }
     } catch (\PDOException $e) {
-      array_push($errors, 'Something went wrong!');
+      array_push($errors, 'Da ist etwas schiefgelaufen!');
     }
     if (count($errors) > 0) {
       return $errors;
@@ -351,7 +350,7 @@ class Auth
   public function getAllPosts() {
     try {
       $posts = [];
-      $sql = "SELECT * FROM posts ORDER BY id ASC";
+      $sql = "SELECT * FROM posts ORDER BY id DESC";
       $result = $this->pdo->query($sql);
 
       if (!$result) {
@@ -378,10 +377,10 @@ class Auth
     $comment = htmlspecialchars(trim($comment, FILTER_SANITIZE_STRING));
     $created_at = time();
     if (strlen($comment) < 3) {
-      array_push($errors, 'Text is too short! Min. 3');
+      array_push($errors, 'Text ist zu kurz! Min. 3');
     }
     if (strlen($comment) > 256) {
-      array_push($errors, 'Text is too long! Max. 256');
+      array_push($errors, 'Text ist zu lang! Max. 256');
     }
     if (count($errors) > 0) {
       return $errors;
@@ -395,14 +394,14 @@ class Auth
         ':created_at' => $created_at,
       ));
       if(!$r) {
-        array_push($errors, 'Something went wrong!');
+        array_push($errors, 'Da ist etwas schiefgelaufen!');
       }
       if (count($errors) > 0) {
         return $errors;
       }
       return true;
     } catch (\PDOException $e) {
-      array_push($errors, 'Something went wrong!');
+      array_push($errors, 'Da ist etwas schiefgelaufen!');
     }
     if (count($errors) > 0) {
       return $errors;
@@ -476,10 +475,10 @@ class Auth
         ':id' => $id,
       ));
       if(!$r) {
-        array_push($errors, 'Something went wrong!');
+        array_push($errors, 'Da ist etwas schiefgelaufen!');
       }
     } catch (\PDOException $e) {
-      array_push($errors, 'Something went wrong!');
+      array_push($errors, 'Da ist etwas schiefgelaufen!');
     }
     if (count($errors) > 0) {
       return $errors;
@@ -500,25 +499,25 @@ class Auth
         ':id' => $this->getId()
       ));
       if ($s->rowCount() <= 0) {
-        array_push($errors, 'User not found!');
+        array_push($errors, 'Benutzer nicht gefunden!');
       } else {
         while ($row = $s->fetch()) {
           if (!password_verify($old, $row['password'])) {
-            array_push($errors, 'Wrong password!');
+            array_push($errors, 'Falsches Passwort!');
           }
         }
       }
     } catch (\PDOException $e) {
-      array_push($errors, 'Something went wrong!');
+      array_push($errors, 'Da ist etwas schiefgelaufen!');
     }
     if (count($errors) > 0) {
       return $errors;
     }
     if ($new != $repeat) {
-      array_push($errors, 'Password repeat wrong!');
+      array_push($errors, 'Passwörter sind nicht gleich!');
     }
     if (strlen(trim($new)) < 8) {
-      array_push($errors, 'Password is too short! Min 8');
+      array_push($errors, 'Passwort zu kurz! Min. 8');
     }
     if (count($errors) > 0) {
       return $errors;
@@ -534,10 +533,10 @@ class Auth
         ':id' => $this->getId(),
       ));
       if(!$r) {
-        array_push($errors, 'Something went wrong!');
+        array_push($errors, 'Da ist etwas schiefgelaufen!');
       }
     } catch (\PDOException $e) {
-      array_push($errors, 'Something went wrong!');
+      array_push($errors, 'Da ist etwas schiefgelaufen!');
     }
     if (count($errors) > 0) {
       return $errors;
