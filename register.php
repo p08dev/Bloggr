@@ -21,15 +21,13 @@ if (isset($_POST['register'])) {
 ?>
 <!DOCTYPE html>
 <html>
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Register - <?= (defined("SITE_TITLE")) ? SITE_TITLE : 'A Bloggr Site' ?></title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" type="text/css" media="screen" href="/css/main.css">
-</head>
+<?php
+$title = "Account erstellen";
+require_once(__DIR__."/inc/head.php");
+?>
 <body>
-  <div>
+  <?php require_once(__DIR__."/inc/nav.php"); ?>
+  <section class="main">
     <h2>Register</h2>
 
     <?php
@@ -58,6 +56,6 @@ if (isset($_POST['register'])) {
       <input type="submit" name="register" value="Registrieren">
     </form>
     <?php } ?>
-  </div>
+  </section>
 </body>
 </html>

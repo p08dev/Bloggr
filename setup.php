@@ -95,6 +95,8 @@ if (isset($_POST['check'])) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Setup - Bloggr</title>
+  <link rel="stylesheet" href="/css/picnic.min.css">
+  <link rel="stylesheet" href="/css/main.css">
 </head>
 <body>
   <p>

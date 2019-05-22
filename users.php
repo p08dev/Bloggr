@@ -27,19 +27,17 @@ $users = $auth->getAllUsers();
 ?>
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Home - <?= (defined("SITE_TITLE")) ? SITE_TITLE : 'A Bloggr Site' ?></title>
-</head>
+<?php
+$title = "Benutzer";
+require_once(__DIR__."/inc/head.php");
+?>
 <body>
-  <div>
-    <a href="/">Home</a>
+  <?php require_once(__DIR__."/inc/nav.php"); ?>
+  <section class="main">
+    <?= ($view) ? '<a href="/users.php">Zurück</a>' : '' ?>
     <h2>Users</h2>
     <?php
     if($view) {
-      echo '<a href="/users.php">Back</a><br>';
       $found = false;
       foreach ($users as $key => $value) {
         if($value['id'] == $view) {
@@ -69,6 +67,6 @@ $users = $auth->getAllUsers();
       }
     }
     ?>
-  </div>
+  </section>
 </body>
 </html>

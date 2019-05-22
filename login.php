@@ -16,15 +16,13 @@ if (isset($_POST['login'])) {
 ?>
 <!DOCTYPE html>
 <html>
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Login - <?= (defined("SITE_TITLE")) ? SITE_TITLE : 'A Bloggr Site' ?></title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" type="text/css" media="screen" href="/css/main.css">
-</head>
+<?php
+$title = "Login";
+require_once(__DIR__."/inc/head.php");
+?>
 <body>
-  <div>
+  <?php require_once(__DIR__."/inc/nav.php"); ?>
+  <section class="main">
     <h2>Login</h2>
 
     <?php
@@ -42,8 +40,8 @@ if (isset($_POST['login'])) {
       <input type="text" name="user" id="user" value="<?= (isset($_POST['user'])) ? htmlspecialchars($_POST['user']) : ''; ?>">
       <label for="password">Password</label>
       <input type="password" name="password" id="password"">
-      <input type="submit" name="login" value="login" class="float-right">
+      <input type="submit" name="login" value="Login" class="float-right">
     </form>
-  </div>
+  </section>
 </body>
 </html>

@@ -70,16 +70,14 @@ if ($action == 'edit') {
 ?>
 <!DOCTYPE html>
 <html>
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Neuer Beitrag - <?= (defined("SITE_TITLE")) ? SITE_TITLE : 'A Bloggr Site' ?></title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" type="text/css" media="screen" href="/css/main.css">
-</head>
+<?php
+$title = "Neuer Beitrag";
+require_once(__DIR__."/inc/head.php");
+?>
 <body>
-  <div>
-    <a href="/">Home</a>
+  <?php require_once(__DIR__."/inc/nav.php"); ?>
+  <section class="main">
+    <a href="/">Zurück</a>
     <?php
     foreach ($errors as $key=>$value):
     ?>
@@ -93,18 +91,21 @@ if ($action == 'edit') {
       echo '<span style="color: green;">Post bearbeitet!</span><br>';
     }
     if ($action == 'view'):
-    if ($auth->canEditPost($data["id"]) == true) echo '<a href="post.php?edit='.$data["id"].'">Edit Post</a>';
     ?>
-    <h2>Titel: <?= $data['title'] ?></h2>
-    <p>Text: <?= nl2br($data['text']) ?></p>
-    <p>Author: <?= $data['user'] ?></p>
+    <h2><?= $data['title'] ?></h2>
+    <p><?= nl2br($data['text']) ?></p>
+    <p><small>von <?= $data['user'] ?> am <?= date('H:i d.m.Y', $data['created_at']) ?><br>
     <?php
     if($data['updated_by']):
     ?>
-    <p>Last edit at <?= date('H:i d.m.Y',$data['updated_at']).' from '.$data['updated_by'] ?></p>
+    Zuletzt bearbeitet: <?= date('H:i d.m.Y',$data['updated_at']).' von '.$data['updated_by'] ?>
+    </small>
     <?php
     endif;
-
+    echo '</p>';
+    if ($auth->canEditPost($data["id"]) == true) echo '<a href="post.php?edit='.$data["id"].'">Edit Post</a>';
+    ?>
+    <?php
     if ($auth->isLoggedIn()) {
     ?>
     <p>
@@ -115,12 +116,12 @@ if ($action == 'edit') {
     </p>
     <?php
     }
-
+    echo '<h3>Kommentare</h3>';
     if(is_array($result_comments)) {
     foreach($result_comments as $comment) {
     ?>
     <p>
-      <b><?= $comment['user']; ?></b> - <?= date('H:i d.m.Y',$comment['created_at']) ?><br>
+      <b><?= $comment['user']; ?></b> am <?= date('H:i d.m.Y',$comment['created_at']) ?><br>
       <?= $comment['comment']; ?>
     </p>
     <?php
@@ -155,6 +156,6 @@ if ($action == 'edit') {
     <?php
     endif;
     ?>
-  </div>
+  </section>
 </body>
 </html>

@@ -1,1 +1,7 @@
-@import "_normalize.scss";
+section.main {
+  text-align: left;
+  width: 90%;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 80px 0 0;
+}
