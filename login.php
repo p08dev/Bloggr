@@ -17,13 +17,13 @@ if (isset($_POST['login'])) {
 <!DOCTYPE html>
 <html>
 <?php
-$title = "Login";
+$title = "Anmelden";
 require_once(__DIR__."/inc/head.php");
 ?>
 <body>
   <?php require_once(__DIR__."/inc/nav.php"); ?>
   <section class="main">
-    <h2>Login</h2>
+    <h2>Anmelden</h2>
     <?php
     foreach ($errors as $key=>$value):
     ?>
@@ -39,7 +39,7 @@ require_once(__DIR__."/inc/head.php");
       <input type="text" name="user" id="user" value="<?= (isset($_POST['user'])) ? htmlspecialchars($_POST['user']) : ''; ?>">
       <label for="password">Password</label>
       <input type="password" name="password" id="password"">
-      <input type="submit" name="login" value="Login" class="float-right">
+      <input type="submit" name="login" value="Anmelden" class="float-right">
     </form>
   </section>
 </body>

@@ -37,7 +37,7 @@ else if (isset($_GET['new'])) {
 }
 else if (isset($_GET['edit'])) {
   $action = 'edit';
-  $title = "Beitrag bearbeitem";
+  $title = "Beitrag bearbeiten";
 }
 else {
   array_push($errors, '404 Not Found');
@@ -181,7 +181,7 @@ require_once(__DIR__."/inc/head.php");
 
     if ($action == 'edit'):
     ?>
-    <h2>Beitrag Bearbeiten</h2>
+    <h2>Beitrag bearbeiten</h2>
     <?php
     if($success == true) {
       echo '<span style="color: green;">Post bearbeitet!</span><br>';

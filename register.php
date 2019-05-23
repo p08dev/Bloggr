@@ -28,7 +28,7 @@ require_once(__DIR__."/inc/head.php");
 <body>
   <?php require_once(__DIR__."/inc/nav.php"); ?>
   <section class="main">
-    <h2>Register</h2>
+    <h2>Account erstellen</h2>
 
     <?php
     foreach ($errors as $key=>$value):

@@ -21,11 +21,11 @@
     if ($auth->hasRole([ \Bloggr\Roles::ADMIN ])){
     ?>
     <a href="/users.php" class="pseudo button">Benutzer</a>
-    <a href="/post.php?new" class="pseudo button">Neuer Post</a>
+    <a href="/post.php?new" class="pseudo button">Neuer Beitrag</a>
     <?php
     } elseif($auth->hasRole([ \Bloggr\Roles::AUTHOR ])) {
     ?>
-    <a href="/post.php?new" class="pseudo button">Neuer Post</a>
+    <a href="/post.php?new" class="pseudo button">Neuer Beitrag</a>
     <?php
     }
     ?>

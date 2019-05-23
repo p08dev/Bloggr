@@ -6,7 +6,7 @@ $posts = $auth->getAllPosts();
 <!DOCTYPE html>
 <html lang="en">
 <?php
-$title = "Home";
+$title = "Startseite";
 require_once(__DIR__."/inc/head.php");
 ?>
 <body>
