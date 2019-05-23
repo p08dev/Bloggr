@@ -101,17 +101,6 @@ require_once(__DIR__."/inc/head.php");
     }
     ?>
     <?php
-    foreach ($errors as $key=>$value):
-    ?>
-    <span style="color: red;">
-      <?= $value ?>
-      </span><br>
-    <?php
-    endforeach;
-
-    if($success == true) {
-      echo '<span style="color: green;">Post bearbeitet!</span><br>';
-    }
     if ($action == 'view'):
     ?>
     <div>
@@ -130,6 +119,15 @@ require_once(__DIR__."/inc/head.php");
     echo '</small></footer>';
     ?>
     </div>
+    <?php
+    foreach ($errors as $key=>$value):
+      ?>
+      <br><span style="color: red;">
+        <?= $value ?>
+        </span>
+      <?php
+    endforeach;
+    ?>
     <?php
     if ($auth->isLoggedIn()) {
     ?>
@@ -162,6 +160,15 @@ require_once(__DIR__."/inc/head.php");
     if ($action == 'new'):
     ?>
     <h2>Neuer Beitrag</h2>
+    <?php
+    foreach ($errors as $key=>$value):
+      ?>
+      <span style="color: red;">
+        <?= $value ?>
+        </span><br>
+      <?php
+    endforeach;
+    ?>
     <form action="<?= htmlspecialchars($_SERVER['REQUEST_URI']) ?>" method="post" class="clearfix">
       <label for="title">Titel</label>
       <input type="text" name="title" id="title" value="<?= (isset($_POST['title'])) ? htmlspecialchars($_POST['title']) : ''; ?>"><br>
@@ -175,6 +182,18 @@ require_once(__DIR__."/inc/head.php");
     if ($action == 'edit'):
     ?>
     <h2>Beitrag Bearbeiten</h2>
+    <?php
+    if($success == true) {
+      echo '<span style="color: green;">Post bearbeitet!</span><br>';
+    }
+    foreach ($errors as $key=>$value):
+      ?>
+      <span style="color: red;">
+        <?= $value ?>
+        </span><br>
+      <?php
+    endforeach;
+    ?>
     <form action="<?= htmlspecialchars($_SERVER['REQUEST_URI']) ?>" method="post" class="clearfix">
       <label for="title">Titel</label>
       <input type="text" name="title" id="title" value="<?= (isset($data['title'])) ? $data['title'] : $ptitle; ?>"><br>

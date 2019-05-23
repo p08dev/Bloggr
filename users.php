@@ -10,7 +10,7 @@ $errors = [];
 $action = '';
 $data = [];
 $view = false;
-
+$success = false;
 
 if(isset($_GET['view'])) {
   if (!empty($_GET['view']) && \is_numeric($_GET['view'])) {
@@ -19,6 +19,12 @@ if(isset($_GET['view'])) {
 
   if(isset($_POST['update'])) {
     $update = $auth->updateUserRole($view, $_POST['role']);
+
+    if(is_array($update)) {
+      $errors = $update;
+    } else {
+      $success = true;
+    }
   }
 
   if(isset($_POST['delete'])) {
@@ -46,6 +52,9 @@ require_once(__DIR__."/inc/head.php");
     <?= ($view) ? '<a href="/users.php">Zurück</a>' : '<a href="/">Zurück</a>' ?>
     <h2>Benutzer</h2>
     <?php
+    if($success == true) {
+      echo '<span style="color: green;">Benutzer bearbeitet!</span><br>';
+    }
     foreach ($errors as $key=>$value):
     ?>
     <span style="color: red;">
