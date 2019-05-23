@@ -12,7 +12,7 @@ require_once(__DIR__."/inc/head.php");
 <body>
   <?php require_once(__DIR__."/inc/nav.php"); ?>
   <section class="main">
-    <h2>Posts</h2>
+    <h2>Beiträge</h2>
     <?php
     if ($posts) {
     foreach($posts as $post) {
@@ -25,7 +25,7 @@ require_once(__DIR__."/inc/head.php");
         <?= substr($post['text'], 0, 512) ?><?= (substr($post['text'], 0, 512) !== $post['text']) ? '... <br><a href="/post.php?view='.$post["id"].'">Weiterlesen...</a>' : '' ?>
       </p>
     <footer>
-      <p><small>von <?= $post['user'] ?> am <?= date('H:i d.m.Y', $post['created_at']) ?></small></p>
+      <p><small>von <?= $post['user'] ?> am <?= date('d.m.Y H:i', $post['created_at']) ?></small></p>
     </footer>
     </article>
     <?php

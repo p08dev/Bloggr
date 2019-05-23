@@ -66,6 +66,16 @@ if ($action == 'edit' && isset($_POST['edit'])) {
   }
 }
 
+if ($action == 'edit' && isset($_POST['delete'])) {
+  $result = $auth->removePost($_GET['edit']);
+
+  if (is_array($result)) {
+    $errors = $result;
+  } else {
+    header("Location: /");
+  }
+}
+
 if ($action == 'edit') {
   $result = $auth->getPost($_GET['edit']);
   if(!$result) {
@@ -109,16 +119,15 @@ require_once(__DIR__."/inc/head.php");
     <section>
     <p><?= nl2br($data['text']) ?></p>
     </section>
-    <footer><small>von <?= $data['user'] ?> am <?= date('H:i d.m.Y', $data['created_at']) ?><br>
+    <footer><small>von <?= $data['user'] ?> am <?= date('d.m.Y H:i', $data['created_at']) ?><br>
     <?php
     if($data['updated_by']):
     ?>
-    Zuletzt bearbeitet: <?= date('H:i d.m.Y',$data['updated_at']).' von '.$data['updated_by'] ?>
-    </small>
+    zuletzt bearbeitet: <?= date('d.m.Y H:i',$data['updated_at']).' von '.$data['updated_by'] ?>
     <?php
     endif;
-    if ($auth->canEditPost($data["id"]) == true) echo '<a href="post.php?edit='.$data["id"].'">Edit Post</a>';
-    echo '</footer>';
+    if ($auth->canEditPost($data["id"]) == true) echo '<br><a href="post.php?edit='.$data["id"].'">Edit Post</a>';
+    echo '</small></footer>';
     ?>
     </div>
     <?php
@@ -158,7 +167,7 @@ require_once(__DIR__."/inc/head.php");
       <input type="text" name="title" id="title" value="<?= (isset($_POST['title'])) ? htmlspecialchars($_POST['title']) : ''; ?>"><br>
       <label for="text">Text</label>
       <textarea rows="4" cols="50" name="text" id="text"><?= (isset($_POST['text'])) ? htmlspecialchars($_POST['text']) : ''; ?></textarea>
-      <input type="submit" name="new" value="new">
+      <input type="submit" name="new" value="Erstellen">
     </form>
     <?php
     endif;
@@ -172,6 +181,27 @@ require_once(__DIR__."/inc/head.php");
       <label for="text">Text</label>
       <textarea rows="4" cols="50" name="text" id="text"><?= (isset($data['text'])) ? $data['text'] : $text; ?></textarea>
       <input type="submit" name="edit" value="Speichern">
+      <label for="modal_1" class="button warning">Löschen</label>
+
+      <div class="modal">
+        <input id="modal_1" type="checkbox" />
+        <label for="modal_1" class="overlay"></label>
+        <article>
+          <header>
+            <h3>Beitrag wirklich löschen?</h3>
+            <label for="modal_1" class="close">&times;</label>
+          </header>
+          <section class="content">
+            Sicher dass der Beitrag gelöscht werden soll? Das löschen eines Beitrags löscht alle seine Kommentare! <b>Die Daten sind nicht wiederherstellbar!</b>
+          </section>
+          <footer>
+            <input class="dangerous warning" type="submit" name="delete" value="Trotzdem löschen">
+            <label for="modal_1" class="button">
+              Abbrechen
+            </label>
+          </footer>
+        </article>
+      </div>
     </form>
     <?php
     endif;

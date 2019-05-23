@@ -35,7 +35,6 @@ if (isset($_POST['check']) || isset($_POST['submit'])) {
   if($dbName == "") {
     array_push($error, "Bitte gib eine Datenbank an.");
   }
-
   if (isset($_POST['submit'])) {
     $config = fopen(__DIR__."/lib/config.php", "w");
 
@@ -107,7 +106,7 @@ if (isset($_POST['check'])) {
   <section class="main">
   <h2>Seiteninformationen</h2>
   <article class="card">
-  <header>
+  <section>
   <p>
     <?php
       foreach($error as $err) {
@@ -119,9 +118,9 @@ if (isset($_POST['check'])) {
     ?>
   </p>
   <form action="" method="post">
-    <div <?= ($success) ? 'style="display: none;' : '' ?>>
+    <div <?= ($success) ? 'style="display: none;"' : '' ?>>
       <p>
-        <label for="SITE_TITLE">Seitentitel</label>
+        <h2>Seitentitel</h2>
         <input type="text" name="SITE_TITLE" id="SITE_TITLE" placeholder="z.B. Mein Blog" value="<?= $siteTitle ?>" >
       </p>
       <h2>Datenbankinformationen</h2>
@@ -158,11 +157,11 @@ if (isset($_POST['check'])) {
     </div>
     <p>
       
-      <?= (!$viewSubmit) ? '<input type="submit" value="Check" name="check">' : '' ?>
-      <?= ($viewSubmit) ? '<input type="submit" value="Submit" name="submit">' : '' ?>
+      <?= (!$viewSubmit) ? '<input type="submit" value="Los!" name="check">' : '' ?>
+      <?= ($viewSubmit) ? '<input type="submit" value="Abschließen" name="submit">' : '' ?>
     </p>
   </form>
-  </header>
+  </section>
   </article>
   </section>
 </body>

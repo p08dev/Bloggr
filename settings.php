@@ -33,6 +33,7 @@ require_once(__DIR__."/inc/head.php");
 <body>
   <?php require_once(__DIR__."/inc/nav.php"); ?>
   <section class="main">
+    <a href="/">Zurück</a>
     <h2>Einstellungen</h2>
     <?php
     foreach ($errors as $key=>$value):

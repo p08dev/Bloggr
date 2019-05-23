@@ -319,6 +319,89 @@ class Auth
     }
     return true;
   }
+  public function removePost($id) {
+    if (!$this->isLoggedIn()) return false;
+    if (!$this->canEditPost($id)) return false;
+
+    $errors = array();
+
+    try {
+      $s = $this->pdo->prepare("DELETE FROM posts WHERE id = :id LIMIT 1;");
+      $r = $s->execute(array(
+        ':id' => $id,
+      ));
+      if(!$r) {
+        array_push($errors, 'Da ist etwas schiefgelaufen!');
+      }
+    } catch (\PDOException $e) {
+      array_push($errors, 'Da ist etwas schiefgelaufen!');
+    }
+
+    try {
+      $s = $this->pdo->prepare("DELETE FROM comments WHERE post = :id;");
+      $r = $s->execute(array(
+        ':id' => $id,
+      ));
+      if(!$r) {
+        array_push($errors, 'Da ist etwas schiefgelaufen!');
+      }
+    } catch (\PDOException $e) {
+      array_push($errors, 'Da ist etwas schiefgelaufen!');
+    }
+
+    if (count($errors) > 0) {
+      return $errors;
+    }
+    return true;
+  }
+  public function deleteUser($id) {
+    if (!$this->isLoggedIn()) return false;
+    if (!$this->hasRole([ \Bloggr\Roles::ADMIN ])) {
+      return false;
+    }
+
+    $errors = array();
+
+    try {
+      $s = $this->pdo->prepare("DELETE FROM users WHERE id = :id;");
+      $r = $s->execute(array(
+        ':id' => $id,
+      ));
+      if(!$r) {
+        array_push($errors, 'Da ist etwas schiefgelaufen!');
+      }
+    } catch (\PDOException $e) {
+      array_push($errors, 'Da ist etwas schiefgelaufen!');
+    }
+    
+    try {
+      $s = $this->pdo->prepare("DELETE FROM posts WHERE user = :id;");
+      $r = $s->execute(array(
+        ':id' => $id,
+      ));
+      if(!$r) {
+        array_push($errors, 'Da ist etwas schiefgelaufen!');
+      }
+    } catch (\PDOException $e) {
+      array_push($errors, 'Da ist etwas schiefgelaufen!');
+    }
+
+    try {
+      $s = $this->pdo->prepare("DELETE FROM comments WHERE user = :id;");
+      $r = $s->execute(array(
+        ':id' => $id,
+      ));
+      if(!$r) {
+        array_push($errors, 'Da ist etwas schiefgelaufen!');
+      }
+    } catch (\PDOException $e) {
+      array_push($errors, 'Da ist etwas schiefgelaufen!');
+    }
+    if (count($errors) > 0) {
+      return $errors;
+    }
+    return true;
+  }
   public function getPost($id) {
     if (empty($id) || !\is_numeric($id)) {
       return false;
